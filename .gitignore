@@ -1,0 +1,9 @@
+**/.gradle
+**/build/
+**/bin/
+**/target/
+**/*.DS_Store
+**/sonar-project.properties
+**/.project
+**/.classpath
+**/.settings/org.eclipse.buildship.core.prefs
