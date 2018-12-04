@@ -2,7 +2,6 @@ package twentyeighteen;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Comparator;
@@ -12,12 +11,11 @@ import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-import java.util.stream.Stream;
 
 public class Day2 {
 
-    static Long twiceTotal = 0L;
-    static Long thriceTotal = 0L;
+    private static Long twiceTotal = 0L;
+    private static Long thriceTotal = 0L;
 
     public static void main(String[] args) throws URISyntaxException, IOException {
 
@@ -26,7 +24,7 @@ public class Day2 {
         // part 1
         strings.forEach(string -> {
             Map<Character, Long> collect = IntStream.range(0, string.length())
-                    .mapToObj(index -> string.charAt(index))
+                    .mapToObj(string::charAt)
                     .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()));
             Long twice = collect.values().stream()
                     .filter(number -> number == 2)
@@ -59,11 +57,11 @@ class Box implements Comparable {
 
     private String id;
 
-    public Box(String id) {
+    Box(String id) {
         this.id = id;
     }
 
-    public String getId() {
+    private String getId() {
         return id;
     }
 
