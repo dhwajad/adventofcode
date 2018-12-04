@@ -4,10 +4,7 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -44,19 +41,14 @@ public class Day3 {
                 .map(Map.Entry::getKey)
                 .collect(Collectors.toSet());
 
-        strings.stream()
+        final Integer id = strings.stream()
                 .map(Claim::new)
-                .filter(claim -> {
-                    long countUnique = claim.getCoordinates().stream()
-                            .filter(coordinate -> {
-                                return collect.contains(coordinate);
-                            }).count();
-                    if(countUnique == claim.getCoordinates().size()) {
-                        System.out.println("claim.getId() = " + claim.getId());
-                        return true;
-                    }
-                    return false;
-                }).findFirst();
+                .filter(claim ->
+                        collect.containsAll(claim.getCoordinates())
+                ).findFirst()
+                .map(Claim::getId)
+                .orElseGet(() -> -1);
+        System.out.println("id = " + id);
     }
 
 }
@@ -64,7 +56,7 @@ public class Day3 {
 class Claim {
     int id;
 
-    List<String> coordinates = new ArrayList<>();
+    Set<String> coordinates = new HashSet<>();
 
     public int getId() {
         return id;
@@ -74,11 +66,11 @@ class Claim {
         this.id = id;
     }
 
-    public List<String> getCoordinates() {
+    public Set<String> getCoordinates() {
         return coordinates;
     }
 
-    public void setCoordinates(List<String> coordinates) {
+    public void setCoordinates(Set<String> coordinates) {
         this.coordinates = coordinates;
     }
 
