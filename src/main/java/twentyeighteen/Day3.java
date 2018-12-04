@@ -54,11 +54,11 @@ public class Day3 {
 }
 
 class Claim {
-    int id;
+    private int id;
 
-    Set<String> coordinates = new HashSet<>();
+    private Set<String> coordinates = new HashSet<>();
 
-    public int getId() {
+    int getId() {
         return id;
     }
 
@@ -66,7 +66,7 @@ class Claim {
         this.id = id;
     }
 
-    public Set<String> getCoordinates() {
+    Set<String> getCoordinates() {
         return coordinates;
     }
 
@@ -78,7 +78,7 @@ class Claim {
      * #123 @ 3,2: 5x4
      * {id=123, coordinates=[2,3, 2,4, 2,5, 2,6, 2,7, 3,3, 3,4, 3,5, 3,6, 3,7, 4,3, 4,4, 4,5, 4,6, 4,7, 5,3, 5,4, 5,5, 5,6, 5,7]}
      */
-    public Claim(String line) {
+    Claim(String line) {
         id = Integer.parseInt(line.substring(line.indexOf("#") + 1, line.indexOf("@")).trim());
         int startTop = Integer.parseInt(line.substring(line.indexOf(",") + 1, line.indexOf(":")).trim());
         int startLeft = Integer.parseInt(line.substring(line.indexOf("@") + 1, line.indexOf(",")).trim());

@@ -4,12 +4,14 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.LinkedHashSet;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 public class Day1 {
+
+    private static int beginFrequency = 0;
+    private static boolean dupNotFound = true;
 
     public static void main(String[] args) throws URISyntaxException, IOException {
 
@@ -23,26 +25,21 @@ public class Day1 {
 
 
         //Part 2
-        List<Integer> ints = new ArrayList<>();
-        ints.add(0);
-        Set<Integer> unique = new LinkedHashSet<>();
-        boolean duplicateFound = false;
-        while(true) {
-            for(String string : strings) {
-                int previousIndex = ints.size() - 1;
-                Integer candidate = Integer.parseInt(string) + ints.get(previousIndex);
-                ints.add(candidate);
-                boolean duplicate = unique.add(candidate);
-                if(!duplicate) {
-                    System.out.println("duplicate = " + candidate);
-                    duplicateFound = true;
-                    break;
-                }
-            }
-            if(duplicateFound) {
-                break;
-            }
-        }
+        Set<Integer> noDups = new HashSet<>();
+        int duplicateFrequency = 0;
+        do {
+            duplicateFrequency = strings.stream()
+                    .mapToInt(Integer::parseInt)
+                    .reduce(beginFrequency, (a, b) -> {
+                        if (dupNotFound) {
+                            beginFrequency = a + b;
+                            dupNotFound = noDups.add(beginFrequency);
+                        }
+                        return beginFrequency;
+                    });
+        } while (dupNotFound);
+        System.out.println("duplicateFrequency = " + duplicateFrequency);
+
 
     }
 }
