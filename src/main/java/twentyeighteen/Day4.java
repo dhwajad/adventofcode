@@ -28,7 +28,7 @@ public class Day4 {
         collect.keySet().stream()
                 .map(guardId -> new Guard(guardId, collect.get(guardId)))
                 .map(Guard::setMinMaxAsleep)
-                .sorted(Comparator.comparing(Guard::getTotalMinAsleep).reversed())
+                .sorted(Comparator.comparing(Guard::getTotalMinAsleep).reversed().thenComparing(Guard::getMinMaxAsleepCount))
                 .forEach(System.out::println);
 
         Integer part1 = collect.keySet().stream()
