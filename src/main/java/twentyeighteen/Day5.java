@@ -19,10 +19,11 @@ public class Day5 {
         final String string = Files.readString(Path.of(Objects.requireNonNull(Thread.currentThread().getContextClassLoader().getResource("day5")).toURI()));
 
         String collect = Stream.of("abcdefghijklmnopqrstuvwxyz".split(""))
-                .map(c -> c + c.toUpperCase() + "|" + c.toUpperCase() + c + "|")
-                .collect(Collectors.joining());
-        final Pattern pattern = Pattern.compile(collect.substring(0, collect.length() - 1));
+                .map(c -> c + c.toUpperCase() + "|" + c.toUpperCase() + c)
+                .collect(Collectors.joining("|"));
+        final Pattern pattern = Pattern.compile(collect);
 
+        System.out.println("collect = " + collect);
         System.out.println("time = " + LocalTime.now());
         System.out.println("string = " + string.length());
 
