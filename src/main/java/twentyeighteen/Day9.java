@@ -27,26 +27,20 @@ public class Day9 {
     public static void main(String[] args) {
 
         ArrayDeque<Integer> circle = new ArrayDeque<>(totalMarbles);
+        circle.addLast(0); //0 added by default and not by any player
         Map<Integer, Long> playerScore = new HashMap<>();
-        for (int i = 0; i <= totalMarbles; i++) {
+        for (int i = 1; i <= totalMarbles; i++) {
             int playerNum = i % numPlayers == 0 ? numPlayers : i % numPlayers;
-            if(i != 0 && i % 23 == 0) {
-                //remove on multiple of 23
-                int score = i;
-                rotate(circle, -7);
-                score += circle.removeLast();
-                if(playerScore.containsKey(playerNum)) {
-                    playerScore.put(playerNum, playerScore.get(playerNum) + score);
-                } else {
-                    playerScore.put(playerNum, Integer.toUnsignedLong(score));
-                }
+            if(i % 23 == 0) {
+                //remove and score on multiple of 23
+                rotate(circle, -9); //by -9 since it was already rotated by +2
+                int score = i + circle.removeLast();
+                playerScore.put(playerNum, playerScore.containsKey(playerNum) ? playerScore.get(playerNum) + score : score);
             } else {
                 //add if not multiple of 23
                 circle.addLast(i);
             }
-            if((i + 1)  % 23 != 0) {
-                rotate(circle, 2);
-            }
+            rotate(circle, 2);
         }
         Map.Entry<Integer, Long> integerIntegerEntry = playerScore.entrySet().stream()
                 .max(Map.Entry.comparingByValue())
@@ -61,7 +55,7 @@ public class Day9 {
                 circle.addFirst(circle.removeLast());
             }
         } else if (byIndex < 0) {
-            //anticlockwise
+            //counter-clockwise
             for (int i = 0; i > byIndex; i--) {
                 circle.addLast(circle.removeFirst());
             }
