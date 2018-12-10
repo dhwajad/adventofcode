@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.LocalTime;
 import java.util.*;
 
 public class Day9 {
@@ -24,10 +25,14 @@ public class Day9 {
         int totalMarbles = Integer.parseInt(string.substring(string.indexOf("worth") + 5, string.indexOf("points")).trim());
         System.out.println("totalMarbles = " + totalMarbles);
 
-        Map<Integer, Integer> playerScore = new HashMap<>();
-        List<Integer> circle = new ArrayList<>();
+        Map<Integer, Long> playerScore = new HashMap<>();
+        List<Integer> circle = new ArrayList<>(totalMarbles);
         int currentIndex = 0;
         for (int i = 0; i <= totalMarbles; i++) {
+            if(i % 100000 == 0) {
+                System.out.println("i = " + i);
+                System.out.println(LocalTime.now());
+            }
             int playerNum = i % numPlayers == 0 ? numPlayers : i % numPlayers;
             if(i != 0 && i % 23 == 0) {
                 int score = i;
@@ -39,7 +44,7 @@ public class Day9 {
                 if(playerScore.containsKey(playerNum)) {
                     playerScore.put(playerNum, playerScore.get(playerNum) + score);
                 } else {
-                    playerScore.put(playerNum, score);
+                    playerScore.put(playerNum, Integer.toUnsignedLong(score));
                 }
                 currentIndex = currentIndex + 2;
                 while (currentIndex > circle.size()) {
@@ -56,7 +61,7 @@ public class Day9 {
                 }
             }
         }
-        Map.Entry<Integer, Integer> integerIntegerEntry = playerScore.entrySet().stream()
+        Map.Entry<Integer, Long> integerIntegerEntry = playerScore.entrySet().stream()
                 .max(Map.Entry.comparingByValue())
                 .get();
         System.out.println("value = " + integerIntegerEntry);
