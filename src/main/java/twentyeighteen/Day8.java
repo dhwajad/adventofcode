@@ -4,8 +4,9 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -13,8 +14,6 @@ import java.util.stream.Stream;
 public class Day8 {
 
     private static List<Integer> numbers;
-
-    private static List<Integer> metaData = new ArrayList<>();
 
     static {
         try {
@@ -29,29 +28,38 @@ public class Day8 {
 
     public static void main(String[] args) {
         System.out.println("numbers = " + numbers.size());
-        findMetaData(numbers);
-        int sum = metaData.stream()
-                .mapToInt(Integer::intValue)
-                .sum();
-        System.out.println("sum = " + sum);
+        List<Integer> sizeValueList = findMetaData(numbers);
+        System.out.println("sizeValueList = " + sizeValueList);
     }
 
-    private static int findMetaData(List<Integer> node) {
+    private static List<Integer> findMetaData(List<Integer> node) {
         Integer quantityChildNodes = node.get(0);
         Integer quantityMetaData = node.get(1);
 
         int size = 2;
 
+        Map<Integer, Integer> childValueMap = new HashMap<>();
         for(int i = 0; i < quantityChildNodes; i++) {
-            size += findMetaData(node.subList(size, node.size() - quantityMetaData));
+            List<Integer> sizeValueList = findMetaData(node.subList(size, node.size() - quantityMetaData));
+            size += sizeValueList.get(0);
+            childValueMap.put(i + 1, sizeValueList.get(1));
         }
 
-        for(int i = size; i < size + quantityMetaData; i++) {
-            metaData.add(node.get(i));
-            //System.out.println(node.get(i));
-        }
+        int value = 0;
+       
+            for(int i = size; i < size + quantityMetaData; i++) {
+                //System.out.println(node.get(i));
+                if (quantityChildNodes == 0) {
+                    value += node.get(i);
+                } else {
+                    if (childValueMap.containsKey(node.get(i))) {
+                        value += childValueMap.get(node.get(i));
+                    }
+                }
+            }
+
         size += quantityMetaData;
-        return size;
+        return List.of(size, value);
     }
 
 }
