@@ -6,6 +6,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 public class Day7 {
 
@@ -25,34 +27,82 @@ public class Day7 {
 
         Map<String, List<String>> children = mapInput(36, 37, 5, 6);
 
+        //step timings
+        Map<String, Integer> stepTimings = Stream.of("abcdefghijklmnopqrstuvwxyz".split(""))
+                .collect(Collectors.toMap(String::toUpperCase, (T) -> ((int) T.charAt(0)) - 36));
 
-        List<String> order = new ArrayList<>();
+        //5 workers (for part 1 switch to 1 worker = 0, 1)
+        Map<String, Integer> workerPool = IntStream.range(0, 5)
+                .boxed()
+                .collect(Collectors.toMap((T) -> T + ".", (T) -> 0));
+
+        List<Integer> totalTime = new ArrayList<>();
+
 
         while (parents.size() > 0) {
-            Map.Entry<String, List<String>> stringListEntry = parents.entrySet().stream().
+            //find eligible
+            List<Map.Entry<String, List<String>>> eligible = parents.entrySet().stream().
                     sorted(Map.Entry.comparingByKey())
+                    .filter(es -> !workerPool.containsKey(es.getKey()))
                     .filter(es -> !children.containsKey(es.getKey()))
-                    .findFirst()
-                    .orElse(null);
+                    .collect(Collectors.toList());
 
-            if(stringListEntry != null) {
-                order.add(stringListEntry.getKey());
-                parents.remove(stringListEntry.getKey());
+            //assign work
+            eligible.forEach( eligibleEntrySet -> {
+                        Map.Entry<String, Integer> freeWorker = workerPool.entrySet().stream()
+                                .filter(workerPoolEntrySet -> workerPoolEntrySet.getKey().contains("."))
+                                .findFirst()
+                                .orElse(null);
+                        if(freeWorker != null) {
+                            workerPool.remove(freeWorker.getKey());
+                            workerPool.put(eligibleEntrySet.getKey(), stepTimings.get(eligibleEntrySet.getKey()));
+                        }
+                    }
+            );
 
-                stringListEntry.getValue().forEach( child -> {
-                            children.get(child).remove(stringListEntry.getKey());
-                            if (children.get(child).size() == 0) {
-                                if (children.size() > 1) {
-                                    children.remove(child);
-                                } else {
-                                    order.add(child);
-                                }
-                            }
-                        });
-            }
+            //complete shortest Task
+            Map.Entry<String, Integer> completeTaskEntrySet = workerPool.entrySet().stream()
+                    .filter(workerPoolEntrySet -> !workerPoolEntrySet.getKey().contains("."))
+                    .min(Map.Entry.comparingByValue())
+                    .get();
+
+
+            //remove parent dependency on child
+            parents.get(completeTaskEntrySet.getKey()).forEach(child -> {
+                children.get(child).remove(completeTaskEntrySet.getKey());
+                if(children.get(child).size() == 0) {
+                    children.remove(child);
+                    if(!parents.containsKey(child)) {
+                        parents.put(child, List.of());
+                    }
+                }
+            });
+
+            //parent complete
+            parents.remove(completeTaskEntrySet.getKey());
+
+            //register time
+            final int taskTime = completeTaskEntrySet.getValue();
+            System.out.println(completeTaskEntrySet.getKey() + " : " + taskTime);
+            totalTime.add(taskTime);
+
+            //reduce elapsed times
+            workerPool.entrySet().stream()
+                    .filter(workerPoolEntrySet -> !workerPoolEntrySet.getKey().contains("."))
+                    .forEach(
+                            workerPoolEntrySet -> workerPool.replace(workerPoolEntrySet.getKey(), workerPoolEntrySet.getValue() - taskTime)
+                    );
+
+            //free up worker
+            workerPool.remove(completeTaskEntrySet.getKey());
+            workerPool.put(completeTaskEntrySet.getKey() + ".", 0);
+
         }
+        int sum = totalTime.stream()
+                .mapToInt(Integer::intValue)
+                .sum();
 
-        order.forEach(System.out::print);
+        System.out.println("sum = " + sum);
 
     }
 
@@ -67,7 +117,7 @@ public class Day7 {
                         },
                         (t, u) -> {
                             t.addAll(u);
-                            t.sort( Comparator.naturalOrder());
+                            t.sort(Comparator.naturalOrder());
                             return t;
                         }
                 ));
