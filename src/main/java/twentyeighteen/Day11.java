@@ -1,14 +1,12 @@
 package twentyeighteen;
 
 import java.util.*;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-import java.util.stream.Stream;
 
 public class Day11 {
 
-    public static Map<String, Integer> cellMap = new HashMap<>();
+    static Map<String, Integer> cellMap = new HashMap<>();
 
     public static void main(String[] args) {
 
@@ -17,7 +15,6 @@ public class Day11 {
                         .mapToObj(x -> new Cell(x, y))
                         .collect(Collectors.toList()))
                 .flatMap(List::stream)
-                .peek(Cell::withPower)
                 .collect(Collectors.toList());
 
         cellMap = cells.stream().collect(Collectors.toMap( cell -> cell.getX() + "," + cell.getY(), Cell::getPower));
@@ -27,10 +24,10 @@ public class Day11 {
                 .max(Comparator.comparingInt(Cell::gridPower))
                 .orElse(null);
 
-        System.out.println(cell);
-        System.out.println(cell.gridPower());
-
-
+        if(cell != null) {
+            System.out.println(cell);
+            System.out.println(cell.gridPower());
+        }
 
     }
 }
@@ -38,18 +35,26 @@ public class Day11 {
 
 class Cell {
 
-    int x;
+    private int x;
 
-    int y;
+    private int y;
 
-    int power;
+    private int power;
 
-    public Cell(int x, int y) {
+    Cell(int x, int y) {
         this.x = x;
         this.y = y;
+
+        int rackId = x + 10;
+        power = rackId * y;
+        power += 6548;
+        power *= rackId;
+        String powerString = Integer.valueOf(power).toString();
+        power = powerString.length() > 2 ? Integer.parseInt(powerString.substring(powerString.length() - 3, powerString.length() - 2)) : 0;
+        power -= 5;
     }
 
-    public int gridPower() {
+    int gridPower() {
         return IntStream.range(x, x + 3)
                 .filter(x -> x < 301)
                 .mapToObj(x -> IntStream.range(y, y + 3)
@@ -62,26 +67,15 @@ class Cell {
                 .sum();
     }
 
-    public Cell withPower() {
-        int rackId = x + 10;
-        power = rackId * y;
-        power += 6548;
-        power *= rackId;
-        String powerString = Integer.valueOf(power).toString();
-        power = powerString.length() > 2 ? Integer.parseInt(powerString.substring(powerString.length() - 3, powerString.length() - 2)) : 0;
-        power -= 5;
-        return this;
-    }
-
-    public int getX() {
+    int getX() {
         return x;
     }
 
-    public int getY() {
+    int getY() {
         return y;
     }
 
-    public int getPower() {
+    int getPower() {
         return power;
     }
 
