@@ -51,7 +51,7 @@ class Cell {
 
         int rackId = x + 10;
         power = rackId * y;
-        power += 1133;
+        power += 6548;
         power *= rackId;
         String powerString = Integer.valueOf(power).toString();
         power = powerString.length() > 2 ? Integer.parseInt(powerString.substring(powerString.length() - 3, powerString.length() - 2)) : 0;
