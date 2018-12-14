@@ -20,14 +20,9 @@ public class Day11 {
         cellMap = cells.stream().collect(Collectors.toMap( cell -> cell.getX() + "," + cell.getY(), Cell::getPower));
 
 
-        Cell cell = cells.stream().parallel()
+        cells.stream().parallel()
                 .filter(Cell::calculateGridPower)
-                .max(Comparator.comparingInt(Cell::getGridPower))
-                .orElse(null);
-
-        if(cell != null) {
-            System.out.println(cell);
-        }
+                .max(Comparator.comparingInt(Cell::getGridPower)).ifPresent(System.out::println);
 
     }
 }
@@ -62,7 +57,7 @@ class Cell {
 
         int gridSizeLimit = x < y ? 301 - x : 301 - y;
 
-        Map<Integer, Integer> gridPowersMap = new HashMap();
+        Map<Integer, Integer> gridPowersMap = new HashMap<>();
         for (int i = 1; i < gridSizeLimit; i++) {
             final int j = i;
             int sum = IntStream.range(x, x + j)
@@ -83,24 +78,20 @@ class Cell {
         if (gridPowersMap.isEmpty()) {
             return false;
         } else {
-            Map.Entry<Integer, Integer> max = gridPowersMap.entrySet().stream().max(Map.Entry.comparingByValue()).orElseGet(null);
-            if(max == null) {
+            Optional<Map.Entry<Integer, Integer>> max = gridPowersMap.entrySet().stream().max(Map.Entry.comparingByValue());
+            if(max.isEmpty()) {
                 return false;
             } else {
-                this.gridSize = max.getKey();
-                this.gridPower = max.getValue();
+                this.gridSize = max.get().getKey();
+                this.gridPower = max.get().getValue();
                 System.out.println("this = " + this);
                 return true;
             }
         }
     }
 
-    public int getGridPower() {
+    int getGridPower() {
         return gridPower;
-    }
-
-    public int getGridSize() {
-        return gridSize;
     }
 
     int getX() {
